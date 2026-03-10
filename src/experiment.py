@@ -13,6 +13,9 @@ class Experiment:
         self.languages = languages
         self.do_sample = do_sample
         self.temprature = temprature
+        self.system_promp = system_promp
+        self.prefix = prefix
+        self.suffix = suffix
 
     def run(self):
         """
