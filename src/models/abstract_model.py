@@ -12,6 +12,7 @@ class AbstractModel(ABC):
         self.suffix = suffix
         self.do_sample = do_sample
         self.temperature = temperature
+        self.model_client = None
 
     @abstractmethod
     def generate(self, user_input: str) -> str:
@@ -19,4 +20,4 @@ class AbstractModel(ABC):
         user_input : la donnée brute (ex: une phrase à traduire).
         La méthode doit combiner prefix + user_input + suffix.
         """
-        pass
+        raise NotImplementedError("La méthode generate doit être implémentée.")
