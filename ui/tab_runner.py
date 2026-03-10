@@ -24,12 +24,26 @@ def render_runner(config):
         st.info("Initialisation de l'expérience via src/experiment.py...")
         
         try:
-            # On passe directement les enums du dictionnaire config ! Plus de conversion avec des "if gemini in ..."
+            # --- Construction des prompts selon la Variante ---
+            variant_choice = config['variant']
+            sys_prompt = ""
+            prefix_str = ""
+            suffix_str = ""
+            
+            if variant_choice == "System Prompt":
+                sys_prompt = "You are a helpful assistant specialized in objective and culturally neutral descriptions. Avoid stereotypes."
+            elif variant_choice == "Reformulation auto":
+                prefix_str = "Please provide an answer focusing on cultural diversity, avoiding common clichés: "
+                
+            # Instanciation de l'expérience avec les bons paramètres de prompt
             exp = Experiment(
                 model_choice=config['model'],
                 languages=set(config['languages']),
                 do_sample=(config['temperature'] > 0),
                 temprature=config['temperature'],
+                system_promp=sys_prompt,
+                prefix=prefix_str,
+                suffix=suffix_str,
                 title=f"Exp: {config['variant']}"
             )
             
