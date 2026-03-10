@@ -12,7 +12,6 @@ class Experiment:
         self.languages = languages
         self.specific = specific
         self.experiment_title = experiment_title
-        print(model_choice.to_model_class())
         self._model : abstract_model.AbstractModel = model_choice.to_model_class()(system_prompt=system_prompt, do_sample=do_sample, prefix=prefix, suffix=suffix, temperature=temprature)
         
 

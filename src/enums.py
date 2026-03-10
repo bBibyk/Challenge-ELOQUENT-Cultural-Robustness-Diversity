@@ -48,7 +48,7 @@ class Model(BaseEnum):
     MISTRAL_NEMO = "Mistral NeMo"
 
     def to_model_class(self) -> type[abstract_model.AbstractModel]:
-        if self.name==self.MISTRAL_NEMO:
+        if self.name=="MISTRAL_NEMO":
             return mistral_ai.MistralNeMo
-        elif self.name==self.GEMINI_2_0_FLASH:
+        elif self.name=="GEMINI_2_0_FLASH":
             return google.Gemini20Flash
