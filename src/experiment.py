@@ -1,5 +1,6 @@
 from src import enums
 from src.models import abstract_model
+import pandas as pd
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -12,7 +13,9 @@ class Experiment:
         self._specific = specific
         self._experiment_title = experiment_title
         self._model : abstract_model.AbstractModel = model_choice.to_model_class()(system_prompt=system_prompt, do_sample=do_sample, prefix=prefix, suffix=suffix, temperature=temprature)
-        
+    
+    def _create_experiment_footprint(self):
+        pass
 
     def run(self):
         """

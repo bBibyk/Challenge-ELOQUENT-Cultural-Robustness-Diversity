@@ -32,10 +32,11 @@ def render_sidebar():
             )
             
             # Affichage dynamique des infos du modèle
-            if selected_model == Model.GEMINI_2_0_FLASH:
-                st.caption("via Google AI Studio (Free Tier)")
-            elif selected_model == Model.MISTRAL_NEMO:
-                st.caption("Modèle On-premise (12B)")
+            try:
+                provider = selected_model.to_model_class().__module__.split('.')[-1]
+                st.caption(f"Provider: {provider.capitalize().replace('_', ' ')}")
+            except Exception:
+                pass
             
         # 2. Données et Langues
         with st.expander("Données et Langues", expanded=True):
