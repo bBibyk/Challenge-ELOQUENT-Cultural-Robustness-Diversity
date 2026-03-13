@@ -1,6 +1,9 @@
 from src import enums
 from src.models import abstract_model
 import pandas as pd
+import datetime
+import json
+import os
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -12,19 +15,59 @@ class Experiment:
         self._languages = languages
         self._specific = specific
         self._experiment_title = experiment_title
+        self._model_choice = model_choice
+        self._result_df = pd.DataFrame(columns=["id", "prompt", "answer"])
+        
         self._model : abstract_model.AbstractModel = model_choice.to_model_class()(system_prompt=system_prompt, do_sample=do_sample, prefix=prefix, suffix=suffix, temperature=temprature)
+
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        model_id = self._model_choice.value.replace(" ", "_").lower()
+        self._output_dir = os.path.join("data", "output", f"{model_id}_{timestamp}")
+        os.makedirs(self._output_dir, exist_ok=True)
+        
     
-    def _create_experiment_footprint(self):
-        pass
+    def _save_experiment_footprint(self):
+        footprint_path = os.path.join(self._output_dir, "submission_metadata.json")
+
+        footprint = {
+            "team": "Nabil Ebalo",
+            "system": "eloquent-system",
+            "model": self._model_choice.value,
+            "submissionid": self._experiment_title or "experiment-1",
+            "date": datetime.datetime.now().strftime("%Y-%m-%d"),
+            "label": "eloquent-2026-cultural",
+            "languages": [lang.value for lang in self._languages],
+            "modifications": {
+                "system_prompt": self._model.system_prompt,
+                "prompt_prefix_english": self._model.prefix,
+                "prompt_suffix_english": self._model.suffix,
+                "generation_params": {
+                    "do_sample": self._model.do_sample,
+                    "temperature": self._model.temperature
+                },
+                "notes": f"Experiment specific: {self._specific}. Title: {self._experiment_title}"
+            }
+        }
+
+        with open(footprint_path, "w", encoding="utf-8") as f:
+            json.dump(footprint, f, indent=4, ensure_ascii=False)
 
     def run(self):
         """
         Générateur qui produit les résultats intermédiaires
         """
-        prompts = ["Qui est le premier ministre de la France ?", "Le bitcoin va-t-il monter ?"]
-        for prompt in prompts:
-            result = self._model.generate(prompt)
-            yield result
+        speceficity = "specific"
+        if not self._specific:
+            speceficity = "un" + speceficity
+        for language in self._languages:
+            df = pd.read_json(f"data/input/{language.value}_{speceficity}.jsonl", lines=True)
+            self._save_experiment_footprint()
+            for id, row in df.iterrows():
+                prompt_text = row['prompt']
+                result = self._model.generate(prompt_text)
+                self._result_df.loc[id] = [id, prompt_text, result]
+                self._result_df.to_json(f"{self._output_dir}/{language.value}_{speceficity}.jsonl", orient="records", lines=True, force_ascii=False)
+                yield result
 
 
 

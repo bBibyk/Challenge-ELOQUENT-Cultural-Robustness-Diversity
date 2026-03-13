@@ -44,7 +44,8 @@ def render_runner(config):
                 system_prompt=sys_prompt,
                 prefix=prefix_str,
                 suffix=suffix_str,
-                experiment_title=f"Exp: {config['variant']}"
+                experiment_title=f"Exp: {config['variant']}",
+                specific=config['dataset_type'] == 'specific'
             )
             
             progress_bar = st.progress(0)

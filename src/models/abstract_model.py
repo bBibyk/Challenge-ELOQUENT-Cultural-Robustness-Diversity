@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 class AbstractModel(ABC):
+    model_name : str
     def __init__(self, 
                  system_prompt: str = "", 
                  prefix: str = "", 
@@ -13,6 +14,9 @@ class AbstractModel(ABC):
         self.do_sample = do_sample
         self.temperature = temperature
         self.model_client = None
+
+    def get_model_name(self) -> str:
+        return self.model_name
 
     @abstractmethod
     def generate(self, user_input: str) -> str:
